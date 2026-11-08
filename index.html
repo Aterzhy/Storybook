@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffd9e4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nasz Jeden Dzień">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%97%3C/text%3E%3C/svg%3E">
+<title>Nasz Jeden Dzień</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --W:420px; --H:560px;
+  --stage-bottom:64px; --milk:#ffd9e4; --rose:#ff8fab; --rose-d:#e8567f; --lilac:#ddd6ff; --butter:#fff0b8;
+  --ink:#4a2f45; --paper:#fffaf5;
+  --hand:'Caveat','Segoe Print','Bradley Hand',cursive;
+  --body:'Nunito','Trebuchet MS',system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;width:100%;overflow:hidden;background:#ffe9ef;color:var(--ink);
+  font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior:none;touch-action:manipulation}
+/* iOS Safari: sayfanın kaymasını / lastik etkisini engeller */
+body{position:fixed;inset:0}
+button{font:inherit;color:inherit}
+
+/* ---------- arka plan ---------- */
+#bg{position:fixed;inset:-6%;background:
+  radial-gradient(900px 600px at 12% 8%,#fff3d6 0,transparent 62%),
+  radial-gradient(900px 700px at 92% 92%,#d9d2ff 0,transparent 62%),
+  linear-gradient(165deg,#ffe3ec,#ffd2e0 55%,#e6defe);will-change:transform}
+#bg i{position:absolute;border-radius:50%;filter:blur(2px);opacity:.55;will-change:transform}
+#bg i:nth-child(1){width:34vmin;height:34vmin;left:6%;top:58%;background:radial-gradient(circle at 35% 30%,#fff,#ffb7cb 70%)}
+#bg i:nth-child(2){width:22vmin;height:22vmin;right:8%;top:10%;background:radial-gradient(circle at 35% 30%,#fff,#cfc6ff 70%)}
+#bg i:nth-child(3){width:14vmin;height:14vmin;left:18%;top:12%;background:radial-gradient(circle at 35% 30%,#fff,#ffe49a 70%)}
+
+/* ---------- sahne ve kitap ---------- */
+#stage{position:fixed;left:0;right:0;top:0;bottom:env(safe-area-inset-bottom,0px);display:grid;place-items:center;perspective:1500px;overflow:hidden;
+  /* çentik / Dynamic Island / ana ekran çizgisi için güvenli alan */
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) 0 env(safe-area-inset-left,0px)}
+#shift{position:relative;width:var(--W);height:var(--H);transition:transform .95s cubic-bezier(.5,0,.2,1)}
+#wrap{position:relative;width:100%;height:100%;touch-action:none;will-change:transform}
+#book{position:absolute;inset:0;perspective:2600px;perspective-origin:0 50%;isolation:isolate}
+#book::before{content:'';position:absolute;left:-4%;right:-5%;bottom:-20px;height:34px;z-index:-2;
+  background:radial-gradient(ellipse at center,rgba(90,40,70,.38),transparent 70%);filter:blur(7px)}
+#book::after{content:'';position:absolute;right:-8px;top:6px;bottom:-4px;width:10px;z-index:-1;border-radius:0 7px 7px 0;
+  background:repeating-linear-gradient(90deg,#fdf1e4 0 1px,#e8d5c2 1px 2px);box-shadow:2px 3px 6px rgba(90,40,70,.25)}
+
+.leaf{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;will-change:transform}
+.pg{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--paper)}
+.pg.front{border-radius:3px 16px 16px 3px}
+.pg.back{transform:rotateY(180deg);border-radius:16px 3px 3px 16px;box-shadow:inset -9px 0 14px rgba(13,18,52,.2)}
+.pg.front::before{content:'';position:absolute;left:0;top:0;bottom:0;width:7%;z-index:6;pointer-events:none;
+  background:linear-gradient(90deg,rgba(60,20,50,.32),rgba(60,20,50,0))}
+.pg.back::before{content:'';position:absolute;right:0;top:0;bottom:0;width:9%;z-index:6;pointer-events:none;
+  background:linear-gradient(270deg,rgba(60,20,50,.3),rgba(60,20,50,0))}
+.shade{position:absolute;inset:0;background:#2a0f26;opacity:0;pointer-events:none;z-index:7}
+
+/* sahne görseli */
+.scene{position:absolute;inset:0;overflow:hidden;background:#f6dbe4}
+.scene-in{position:absolute;inset:0;transform:translate(var(--tx,0px),var(--ty,0px)) scale(1.06);will-change:transform}
+.scene-in img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none}
+.vig{position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(70,25,55,.22) 100%)}
+.sheen{position:absolute;inset:-10% -30%;pointer-events:none;z-index:3;mix-blend-mode:soft-light;
+  background:linear-gradient(112deg,transparent 38%,rgba(255,255,255,.3) 50%,transparent 62%);
+  transform:translateX(calc(var(--tx,0px) * -7))}
+
+/* kapak */
+.cover{position:absolute;inset:0;
+  background:radial-gradient(circle at 28% 18%,#ffc2d3,#ff8fab 55%,#e0577f);
+  display:grid;place-items:center}
+.cv-frame{position:absolute;inset:6%;border:2.5px dashed rgba(255,255,255,.85);border-radius:16px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:0 6%;gap:2%}
+.cv-title{font-family:var(--hand);font-weight:700;font-size:calc(var(--W) * .165);line-height:.95;
+  text-shadow:0 3px 0 rgba(150,40,80,.35)}
+.cv-sub{font-family:var(--hand);font-weight:600;font-size:calc(var(--W) * .066);opacity:.95}
+.cv-heart{font-size:calc(var(--W) * .2);line-height:1;filter:drop-shadow(0 4px 0 rgba(150,40,80,.35));animation:beat 1.6s ease-in-out infinite}
+.cv-hint{position:absolute;bottom:8%;left:0;right:0;text-align:center;color:#fff;font-weight:800;font-size:calc(var(--W) * .036);opacity:.92}
+.cover-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+@keyframes beat{0%,100%{transform:scale(1)}18%{transform:scale(1.12)}36%{transform:scale(1)}54%{transform:scale(1.08)}}
+
+/* arka kağıtlar */
+.paper{position:absolute;inset:0;padding:12% 11%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  background:
+    repeating-linear-gradient(0deg,transparent 0 31px,rgba(232,86,127,.1) 31px 32px),
+    linear-gradient(160deg,#fffaf5,#fff1ea)}
+.pp-no{position:absolute;bottom:5%;font-family:var(--hand);font-weight:700;font-size:calc(var(--W) * .055);color:rgba(74,47,69,.45)}
+.pp-doodle{font-size:calc(var(--W) * .09);opacity:.4;color:var(--rose)}
+.pp-note{font-family:var(--hand);font-weight:600;font-size:calc(var(--W) * .068);line-height:1.2;transform:rotate(-2deg);color:var(--ink)}
+.endpaper{position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 25% 30%,rgba(255,255,255,.7) 0 3px,transparent 4px) 0 0/34px 34px,
+    radial-gradient(circle at 75% 70%,rgba(255,255,255,.5) 0 2px,transparent 3px) 0 0/34px 34px,
+    linear-gradient(160deg,#ffc9d8,#e6defe)}
+.finale{background:radial-gradient(circle at 50% 30%,#fff7d6,transparent 60%),linear-gradient(160deg,#fffaf5,#ffe3ec)}
+.fi-title{font-family:var(--hand);font-weight:700;font-size:calc(var(--W) * .13);line-height:1;color:var(--rose-d)}
+.fi-text{font-weight:800;font-size:calc(var(--W) * .048);line-height:1.5;margin-top:5%}
+.fi-heart{font-size:calc(var(--W) * .16);margin-top:5%;color:var(--rose-d);animation:beat 1.6s ease-in-out infinite}
+.backcover{position:absolute;inset:0;background:linear-gradient(160deg,#e0577f,#ff8fab)}
+.fi-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+/* ---------- arayüz katmanı ---------- */
+#ui{position:absolute;inset:0;pointer-events:none;z-index:20}
+#fx{position:absolute;left:0;top:0;pointer-events:none}
+
+/* ---------- masal anlatıcısı: sayfa ile birlikte dönen sol yüz ---------- */
+.narrator-page{position:absolute;inset:0;overflow:hidden;background:#061638;cursor:pointer}
+.narrator-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;
+  pointer-events:none;-webkit-user-drag:none;transform:scale(1.002);transform-origin:38% 55%}
+.narrator-page::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(5,10,42,.08) 0%,transparent 55%,rgba(5,12,40,.36) 100%)}
+.narrator-page.is-speaking .narrator-art{animation:teller-breathe .62s ease-in-out infinite alternate}
+@keyframes teller-breathe{from{transform:scale(1.002) translateY(0)}to{transform:scale(1.009) translateY(-1px)}}
+/* anlatici.png yoksa şık bir yedek sayfa */
+.narrator-page.noart{background:radial-gradient(circle at 50% 38%,#fff7d6,transparent 60%),linear-gradient(160deg,#ffd2e0,#ddd6ff)}
+.narrator-page.noart::after{display:none}
+.narrator-page.noart::before{content:'♥';position:absolute;left:0;right:0;top:26%;text-align:center;line-height:1;
+  font-size:calc(var(--W) * .3);color:rgba(232,86,127,.45)}
+.narrator-page.noart .narrator-note{color:var(--ink);text-shadow:none;opacity:.8}
+.narrator-call{position:absolute;right:5%;bottom:5%;z-index:3;max-width:90%;
+  padding:2.2% 4%;border:1px solid rgba(255,233,168,.8);border-radius:99px;
+  background:rgba(10,23,61,.85);box-shadow:0 3px 18px rgba(2,9,32,.38),inset 0 0 16px rgba(250,190,81,.1);
+  color:#fff1c7;font-family:var(--hand);font-size:calc(var(--W) * .062);font-weight:700;line-height:1.1;
+  cursor:pointer;transition:background .2s,transform .2s}
+.narrator-call:hover{background:rgba(22,39,96,.94);transform:translateY(-2px)}
+.narrator-call:focus-visible{outline:3px solid #ffdb8d;outline-offset:3px}
+.narrator-call.unread::after{content:'✦';position:absolute;right:-5%;top:-30%;color:#ffe1a2;
+  font-family:var(--body);font-size:calc(var(--W) * .06);filter:drop-shadow(0 0 4px #f8bd64);
+  animation:narrator-sparkle 1.5s ease-in-out infinite}
+@keyframes narrator-sparkle{50%{opacity:.5;transform:scale(1.3)}}
+.narrator-note{position:absolute;left:3%;bottom:2.5%;z-index:3;max-width:63%;
+  color:#fff0c8;text-shadow:0 1px 6px #05112e;font-family:var(--hand);
+  font-size:calc(var(--W) * .036);line-height:1.15;opacity:.85;pointer-events:none}
+/* Konuşma balonu her sayfanın arkasına taşınır; dolayısıyla 3D dönüşe dahildir. */
+#bubble{position:absolute;right:4%;top:16%;width:53%;max-height:64%;overflow-y:auto;
+  padding:4% 4% 3%;background:rgba(255,252,245,.97);border:2px solid #e6c17e;
+  border-radius:16px;box-shadow:0 7px 21px rgba(4,12,37,.4),0 0 22px rgba(255,204,118,.22);
+  color:#362543;cursor:pointer;pointer-events:auto;z-index:10;
+  transform-origin:20% 80%;transform:scale(.15);opacity:0;visibility:hidden;
+  transition:transform .3s cubic-bezier(.2,1.5,.4,1),opacity .2s,visibility .2s;
+  font-weight:800;font-size:clamp(10px,calc(var(--W) * .041),19px);line-height:1.35;
+  scrollbar-width:thin}
+#bubble.open{transform:scale(1);opacity:1;visibility:visible}
+#bubble::after{content:'';position:absolute;left:8%;bottom:-1px;width:13px;height:13px;
+  background:#fffdf7;border-left:2px solid #e6c17e;border-bottom:2px solid #e6c17e;
+  transform:translate(-55%,45%) rotate(-45deg)}
+#btext{min-height:1.35em;white-space:pre-wrap;overflow-wrap:anywhere}
+#bnext{text-align:right;font-size:.79em;opacity:.65;min-height:1.2em;margin-top:5px}
+/* gezinme */
+#nav{position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:8px;
+  padding:6px 8px;border-radius:99px;background:rgba(255,255,255,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:2.5px solid #fff;box-shadow:0 6px 18px rgba(90,30,60,.2)}
+#nav button{width:44px;height:44px;border-radius:50%;border:0;background:var(--rose);color:#fff;font-size:22px;font-weight:800;cursor:pointer;
+  box-shadow:0 3px 0 var(--rose-d)}
+#nav button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--rose-d)}
+#nav button:disabled{opacity:.35;cursor:default}
+#nav button:focus-visible,.narrator-call:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+#pager{min-width:74px;text-align:center;font-weight:800;font-size:14px}
+
+#mobile-actions{display:none;position:fixed;left:0;right:0;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:49;gap:10px;justify-content:center;padding:0 12px;pointer-events:none}
+#mobile-actions button{pointer-events:auto;min-height:44px;border-radius:99px;border:1.5px solid rgba(255,255,255,.9);padding:8px 12px;background:#182f65;color:#fff4d0;
+  font-weight:800;font-size:clamp(11px,3.2vw,14px);white-space:nowrap;box-shadow:0 3px 12px #6b49604a;touch-action:manipulation}
+#mobile-actions button:disabled{opacity:.35}
+#imageviewer{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(14,12,33,.93);
+  padding:calc(env(safe-area-inset-top,0px) + 20px) calc(env(safe-area-inset-right,0px) + 14px) calc(env(safe-area-inset-bottom,0px) + 22px) calc(env(safe-area-inset-left,0px) + 14px);gap:14px;overscroll-behavior:contain}
+#imageviewer.open{display:flex}
+#imageviewer img{width:100%;height:100%;max-height:calc(100% - 62px);object-fit:contain;min-height:0}
+#imageviewer button{min-height:44px;min-width:120px;border:2px solid #fff;border-radius:99px;background:#ff8fab;color:#fff;font-weight:800}
+
+#tapHint{display:none;position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);text-align:center;z-index:40;
+  pointer-events:none;font-family:var(--hand);font-weight:700;font-size:20px;color:var(--ink);opacity:0;transition:opacity .4s}
+body.is-mobile #tapHint{display:block}
+#tapHint.on{opacity:.8;animation:hintpulse 1.8s ease-in-out infinite}
+@keyframes hintpulse{50%{opacity:.35}}
+#rotate{display:none;position:fixed;inset:0;z-index:95;place-items:center;text-align:center;padding:20px;
+  background:linear-gradient(165deg,#ffe3ec,#e6defe);font-family:var(--hand);font-weight:700;font-size:28px;line-height:1.2;color:var(--ink)}
+#rotate div{animation:beat 1.6s ease-in-out infinite}
+body.is-mobile.is-landscape #rotate{display:grid}
+
+/* ---------- TELEFON (JS, body'ye .is-mobile / .is-landscape ekler) ---------- */
+body.is-mobile #mobile-actions{display:flex}
+body.is-mobile #nav button{width:48px;height:48px;touch-action:manipulation}
+body.is-mobile #pager{min-width:86px}
+body.is-mobile .narrator-call{font-size:max(10px,calc(var(--W) * .062));padding:5px 8px}
+body.is-mobile .narrator-note,body.is-mobile .sheen{display:none}
+body.is-mobile #bubble{position:fixed;left:calc(12px + env(safe-area-inset-left,0px));right:calc(12px + env(safe-area-inset-right,0px));top:auto;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 16px);width:auto;max-height:min(46dvh,340px);padding:17px 18px 14px;font-size:17px;line-height:1.5;
+  border-radius:20px;transform-origin:50% 100%;z-index:70;box-shadow:0 10px 45px #0a0d2b9c;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+body.is-mobile #bubble::after{display:none}
+body.is-mobile.is-landscape #nav{left:calc(12px + env(safe-area-inset-left,0px));transform:none;bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+body.is-mobile.is-landscape #mobile-actions{left:auto;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:0;gap:6px}
+body.is-mobile.is-landscape #mobile-actions button{font-size:12px;padding:7px 10px}
+body.is-mobile.is-landscape #bubble{left:15%;right:15%;max-height:58dvh;font-size:16px}
+#loading{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:linear-gradient(165deg,#ffe3ec,#e6defe);
+  font-family:var(--hand);font-weight:700;font-size:30px;text-align:center;transition:opacity .6s}
+#loading.off{opacity:0;pointer-events:none}
+#loading div{animation:beat 1.4s ease-in-out infinite}
+
+@media (prefers-reduced-motion:reduce){
+  .narrator-page.is-speaking .narrator-art,.narrator-call.unread::after,.cv-heart,.fi-heart{animation:none}
+}
+</style>
+</head>
+<body>
+<div id="bg"><i data-z="1.2"></i><i data-z="2"></i><i data-z=".8"></i></div>
+
+<div id="stage">
+  <div id="shift">
+    <div id="wrap">
+      <div id="book"></div>
+      <div id="ui">
+        <canvas id="fx"></canvas>
+        <!-- Bu balon açılan sol sayfanın içine taşınır. -->
+        <div id="bubble" data-nodrag role="status" aria-live="polite"><div id="btext"></div><div id="bnext"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tapHint">✦ dotknij obrazu, aby posłuchać opowieści</div>
+<div id="rotate"><div>↻<br>Obróć telefon<br>do pozycji pionowej</div></div>
+<div id="loading"><div>Książka się przygotowuje ♥</div></div>
+
+<script src="hikaye.js"></script>
+<script>
+(() => {
+'use strict';
+
+const CFG = window.HIKAYE || {};
+const $ = s => document.querySelector(s);
+const root = document.documentElement;
+const book = $('#book'), wrap = $('#wrap'), shift = $('#shift'), stage = $('#stage');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SC = 1.06;
+const state = { W: 420, H: 560, wide: false };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let AR = 0.75, leaves = [], cur = 0, busy = false, activeIdx = -1;
+
+/* ============ görsel bulma: strona1, strona2, ... okladka, final, anlatici ============ */
+// GitHub Pages / Netlify dosya adlarında BÜYÜK-küçük harfe duyarlıdır (strona1.jpg ≠ Strona1.JPG).
+const EXT = ['jpg', 'jpeg', 'png', 'webp', 'JPG', 'JPEG', 'PNG', 'WEBP'];
+function loadImg(src) {
+  return new Promise(res => {
+    const im = new Image();
+    im.decoding = 'async';
+    im.onload = () => res({ src, w: im.naturalWidth, h: im.naturalHeight });
+    im.onerror = () => res(null);
+    im.src = src;
+  });
+}
+// Verilen adların tüm uzantılarını paralel dener, ilk bulunanı döndürür.
+async function probe(bases) {
+  const urls = [];
+  bases.forEach(b => EXT.forEach(e => urls.push(encodeURI(b) + '.' + e)));
+  const found = await Promise.all(urls.map(loadImg));
+  return found.find(Boolean) || null;
+}
+const pageBases = n => ['strona' + n, 'sayfa' + n];
+async function findImages() {
+  // hikaye.js içindeki sayfa sayısı kadarını paralel yükle (hızlı), fazlası varsa sırayla ara.
+  const expected = Object.keys(CFG.sayfalar || {}).length;
+  const pages = [];
+  if (expected) {
+    const first = await Promise.all(Array.from({ length: expected }, (_, k) => probe(pageBases(k + 1))));
+    for (const r of first) { if (!r) break; pages.push(r); }
+  }
+  if (pages.length === expected) {
+    for (let n = expected + 1; n <= 80; n++) {
+      const r = await probe(pageBases(n));
+      if (!r) break;
+      pages.push(r);
+    }
+  }
+  const [cover, finalImg, narrator] = await Promise.all([
+    probe(['okladka', 'okładka', 'kapak', 'cover']), probe(['final']), probe(['anlatici', 'narrator'])
+  ]);
+  return { pages, cover, finalImg, narrator };
+}
+
+/* görsel yoksa deneme için örnek sayfalar */
+function demoImage(n) {
+  const c = document.createElement('canvas'); c.width = 900; c.height = 1200;
+  const g = c.getContext('2d'), h = [340, 20, 200, 160, 280][(n - 1) % 5];
+  const gr = g.createLinearGradient(0, 0, 900, 1200);
+  gr.addColorStop(0, `hsl(${h} 90% 91%)`); gr.addColorStop(1, `hsl(${h + 30} 80% 80%)`);
+  g.fillStyle = gr; g.fillRect(0, 0, 900, 1200);
+  g.fillStyle = 'rgba(255,255,255,.55)'; g.beginPath(); g.arc(450, 520, 300, 0, 7); g.fill();
+  g.textAlign = 'center'; g.fillStyle = 'rgba(120,50,90,.85)';
+  g.font = 'bold 150px sans-serif'; g.fillText('♥', 450, 570);
+  g.font = 'bold 58px sans-serif'; g.fillText('strona ' + n, 450, 770);
+  g.font = '34px sans-serif'; g.fillText('umieść plik strona' + n + '.jpg w tym folderze', 450, 835);
+  return { src: c.toDataURL('image/jpeg', .85), w: 900, h: 1200 };
+}
+function demoCfg(n) {
+  return { konusma: ['To jest strona testowa. Kiedy wstawisz własne obrazy, tutaj pojawi się Twoja historia 💬'] };
+}
+
+/* ============ boyutlandırma ============ */
+/* Telefon dikey  → TEK sayfa (illüstrasyon ekranı doldurur, anlatıcı alttan açılır)
+   Telefon yatay / tablet / bilgisayar → AÇIK KİTAP (iki sayfa) */
+function layout() {
+  const vw = document.documentElement.clientWidth || innerWidth;
+  const vh = innerHeight;               // iOS Safari'de adres çubuğuna göre güncel görünür yükseklik
+  const landscape = vw > vh;
+  const mobile = Math.min(vw, vh) <= 600;   // iPhone 17 Pro: 402×874 (dikey) / 874×402 (yatay)
+  state.mobile = mobile; state.single = mobile && !landscape;
+  document.body.classList.toggle('is-mobile', mobile);
+  document.body.classList.toggle('is-landscape', landscape);
+
+  const cs = getComputedStyle(stage);
+  const bottom = (parseFloat(cs.bottom) || 0) + 10;   // alt güvenli alan (ana ekran çizgisi)
+  const padT = parseFloat(cs.paddingTop) || 0, padL = parseFloat(cs.paddingLeft) || 0, padR = parseFloat(cs.paddingRight) || 0;
+  const availH = Math.max(120, vh - padT - bottom - (mobile ? 16 : 30));
+  const availW = vw - padL - padR;
+  // Tek sayfa: tüm genişlik. Açık kitap: 2 sayfa + kenar payı.
+  const maxW = state.single ? Math.max(100, availW - 32)
+                            : Math.max(100, (availW - (mobile ? 24 : 48)) / (mobile ? 2.04 : 2.10));
+  let H = Math.min(availH, maxW / AR), W = H * AR;
+  W = Math.floor(W); H = Math.floor(H);
+  state.W = W; state.H = H;
+  root.style.setProperty('--W', W + 'px'); root.style.setProperty('--H', H + 'px');
+  if (!busy) leaves.forEach((_, i) => setLeaf(i, i < cur ? -180 : 0, false));
+  updateShift(cur);
+  resizeFx();
+  placeBubble();   // telefonda konuşma balonu sayfanın dışında, altta açılır
+}
+function updateShift(target) {
+  shift.style.transform = (target > 0 && !state.single) ? `translateX(${state.W / 2}px)` : 'translateX(0)';
+}
+
+/* ============ kitap yapısı ============ */
+let NARR = null;   // anlatici.png / .jpg / .webp bulunursa dolar
+function narratorHTML(note = '') {
+  const art = NARR ? `<img class="narrator-art" src="${NARR.src}" alt="" draggable="false">` : '';
+  return `<div class="narrator-page${NARR ? '' : ' noart'}">
+    ${art}
+    ${note ? `<div class="narrator-note">${esc(note)}</div>` : ''}
+    <button class="narrator-call unread" type="button" data-nodrag aria-label="Posłuchaj opowieści">✦ Posłuchaj opowieści</button>
+  </div>`;
+}
+function leafHTML(d) {
+  if (d.kind === 'cover') {
+    const front = d.cover
+      ? `<img class="cover-img" src="${d.cover.src}" alt="" draggable="false">`
+      : `<div class="cover"><div class="cv-frame"><div class="cv-title">${esc(CFG.baslik || 'Nasz Jeden Dzień')}</div>
+         <div class="cv-heart">♥</div><div class="cv-sub">${esc(CFG.altBaslik || '')}</div></div>
+         <div class="cv-hint">dotknij lub przesuń, aby otworzyć</div></div>`;
+    return { front, back: narratorHTML() };
+  }
+  if (d.kind === 'final') {
+    const f = d.cfg;
+    const front = d.finalImg
+      ? `<img class="fi-img" src="${d.finalImg.src}" alt="" draggable="false">`
+      : `<div class="paper finale"><div class="fi-title">${esc(f.baslik || 'Ciąg dalszy nastąpi…')}</div>
+         <div class="fi-text">${esc(f.metin || '')}</div><div class="fi-heart">♥</div></div>`;
+    return { front, back: '<div class="backcover"></div>' };
+  }
+  return {
+    front: `<div class="scene"><div class="scene-in"><img src="${d.src}" alt="" draggable="false"></div>
+            <div class="vig"></div><div class="sheen"></div></div>`,
+    // Her sayfanın arka yüzü yeni bir dede sayfasıdır; sayfa ile beraber döner.
+    back: narratorHTML(d.cfg.arka || '')
+  };
+}
+function buildBook(data) {
+  book.innerHTML = '';
+  leaves = data.map(d => {
+    const el = document.createElement('div'); el.className = 'leaf';
+    const fr = document.createElement('div'); fr.className = 'pg front';
+    const bk = document.createElement('div'); bk.className = 'pg back';
+    const h = leafHTML(d);
+    fr.innerHTML = h.front; bk.innerHTML = h.back;
+    const fs = document.createElement('div'); fs.className = 'shade'; fr.appendChild(fs);
+    const bs = document.createElement('div'); bs.className = 'shade'; bk.appendChild(bs);
+    el.append(fr, bk); book.appendChild(el);
+    return Object.assign({ el, fr, bk, fs, bs }, d);
+  });
+  leaves.forEach((_, i) => setLeaf(i, 0, false));
+}
+
+/* ============ sayfa çevirme ============ */
+function setLeaf(i, a, moving) {
+  const L = leaves[i];
+  const lift = moving ? Math.sin(-a * Math.PI / 180) * 2.4 : 0;
+  L.el.style.transform = `rotateY(${a}deg) rotateX(${lift}deg)`;
+  L.el.style.zIndex = moving ? 1000 : (a <= -90 ? i + 1 : 300 - i);
+  // Tek sayfa modunda çevrilmiş yapraklar ekran dışında kalır; GPU yükünü azaltmak için gizle.
+  L.el.style.visibility = (state.single && !moving && a <= -90) ? 'hidden' : 'visible';
+  const s = Math.abs(Math.sin(a * Math.PI / 180)), front = a > -90;
+  L.fs.style.opacity = front ? s * 0.4 : 0;
+  L.bs.style.opacity = front ? 0 : s * 0.4;
+  const below = leaves[i + 1];
+  if (below) below.fs.style.opacity = moving ? s * 0.3 : 0;
+}
+function animateLeaf(i, from, to, dur) {
+  return new Promise(res => {
+    const t0 = performance.now();
+    const step = now => {
+      const t = Math.min(1, (now - t0) / dur);
+      const e = t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      setLeaf(i, from + (to - from) * e, true);
+      if (t < 1) requestAnimationFrame(step); else { setLeaf(i, to, false); res(); }
+    };
+    requestAnimationFrame(step);
+  });
+}
+function next() {
+  if (busy || cur >= leaves.length - 1) return;
+  busy = true; clearUI(); updateShift(cur + 1);
+  animateLeaf(cur, 0, -180, 1000).then(() => { cur++; busy = false; activate(cur); });
+}
+function prev() {
+  if (busy || cur <= 0) return;
+  busy = true; clearUI(); updateShift(cur - 1);
+  animateLeaf(cur - 1, -180, 0, 1000).then(() => { cur--; busy = false; activate(cur); });
+}
+
+/* kaydırma ve dokunma */
+let sw = null;
+wrap.addEventListener('pointerdown', e => {
+  if (busy || e.target.closest('[data-nodrag]')) return;
+  sw = { id: e.pointerId, x: e.clientX, moved: false, dir: 0, i: -1, p: 0 };
+});
+wrap.addEventListener('pointermove', e => {
+  if (!sw || e.pointerId !== sw.id) return;
+  const dx = e.clientX - sw.x;
+  if (!sw.moved) {
+    if (Math.abs(dx) < 10) return;
+    if (dx < 0 && cur < leaves.length - 1) { sw.dir = 1; sw.i = cur; }
+    else if (dx > 0 && cur > 0) { sw.dir = -1; sw.i = cur - 1; }
+    else { sw = null; return; }
+    sw.moved = true; busy = true; clearUI();
+    try { wrap.setPointerCapture(e.pointerId); } catch (_) {}
+  }
+  sw.p = Math.min(1, Math.abs(dx) / (state.W * (state.single ? 0.6 : 0.85)));
+  setLeaf(sw.i, sw.dir > 0 ? -180 * sw.p : -180 + 180 * sw.p, true);
+});
+const swEnd = e => {
+  if (!sw || e.pointerId !== sw.id) return;
+  const s = sw; sw = null;
+  if (!s.moved) {
+    if (e.type === 'pointercancel' || e.target.closest('[data-nodrag]')) return;
+    // Sol sayfaya dokunmak "önceki sayfa" sayılmaz; dedeyi konuşturur.
+    if (e.target.closest('.narrator-page')) return;
+    const r = wrap.getBoundingClientRect(), x = e.clientX;
+    if (cur === 0) next();
+    else if (x < r.left + r.width * (state.single ? 0.25 : 0.12)) prev();
+    else if (x > r.right - r.width * (state.single ? 0.25 : 0.18)) next();
+    else if (state.single && activeNarrator) (bubble.classList.contains('open') ? closeBubble() : openBubble());
+    return;
+  }
+  const commit = s.p > 0.3;
+  const from = s.dir > 0 ? -180 * s.p : -180 + 180 * s.p;
+  const to = s.dir > 0 ? (commit ? -180 : 0) : (commit ? 0 : -180);
+  if (commit) updateShift(cur + s.dir);
+  animateLeaf(s.i, from, to, commit ? 600 : 350).then(() => {
+    if (commit) cur += s.dir;
+    busy = false; activate(cur);
+  });
+};
+wrap.addEventListener('pointerup', swEnd);
+wrap.addEventListener('pointercancel', swEnd);
+addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+  else if (e.key === 'ArrowLeft') prev();
+});
+
+/* ============ parçacıklar ============ */
+const cv = $('#fx'), cx = cv.getContext('2d');
+const THEMES = { kalp: ['💗', '💕', '✨', '💖'], yildiz: ['✨', '⭐', '🌟', '✨'], sakura: ['🌸', '🌸', '✨'], kar: ['❄️', '✨', '❄️'], yaprak: ['🍂', '🍁', '✨'], kapali: [] };
+let parts = [], theme = 'kalp';
+const tilt = { x: 0, y: 0, tx: 0, ty: 0 };
+function resizeFx() {
+  const d = Math.min(2, devicePixelRatio || 1);
+  cv.width = state.W * d; cv.height = state.H * d;
+  cv.style.width = state.W + 'px'; cv.style.height = state.H + 'px';
+  cx.setTransform(d, 0, 0, d, 0, 0);
+}
+function spawnAmb(init) {
+  const arr = THEMES[theme]; if (!arr || !arr.length) return;
+  const z = .3 + Math.random() * 1.1;
+  parts.push({ x: Math.random() * state.W, y: init ? Math.random() * state.H : state.H + 30, z,
+    e: arr[(Math.random() * arr.length) | 0], vy: -(10 + Math.random() * 16) * (.5 + z * .5),
+    ph: Math.random() * 6.28, sp: .6 + Math.random() * .9, a: .25 + Math.random() * .5, s: 10 + z * 16 });
+}
+function setTheme(t) {
+  theme = THEMES[t] ? t : 'kalp';
+  parts = parts.filter(p => p.burst);
+  if (!reduce) for (let k = 0; k < 10; k++) spawnAmb(true);
+}
+function burst(px, py, emoji, n) {
+  const arr = Array.isArray(emoji) ? emoji : [emoji];
+  for (let k = 0; k < n; k++) {
+    const a = Math.random() * 6.283, v = 60 + Math.random() * 140;
+    parts.push({ burst: true, x: px, y: py, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 90, life: 0,
+      max: 1.1 + Math.random() * .7, e: arr[(Math.random() * arr.length) | 0], s: 18 + Math.random() * 14 });
+  }
+  if (parts.length > 260) parts.splice(0, parts.length - 260);
+}
+function drawFx(dt, t) {
+  const W = state.W, H = state.H;
+  cx.clearRect(0, 0, W, H);
+  const target = reduce ? 5 : Math.max(10, Math.min(28, Math.round(W * H / 16000)));
+  let amb = 0; for (const p of parts) if (!p.burst) amb++;
+  if (THEMES[theme].length && amb < target && Math.random() < .08) spawnAmb(false);
+  cx.textAlign = 'center'; cx.textBaseline = 'middle';
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i];
+    if (p.burst) {
+      p.life += dt; p.vy += 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt;
+      const k = p.life / p.max; if (k >= 1) { parts.splice(i, 1); continue; }
+      cx.globalAlpha = 1 - k * k; cx.font = p.s + 'px serif'; cx.fillText(p.e, p.x, p.y);
+    } else {
+      p.y += p.vy * dt;
+      if (p.y < -30) { parts.splice(i, 1); continue; }
+      const sx = Math.sin(t * p.sp + p.ph) * 14 * p.z, ox = -tilt.x * p.z * 18, oy = -tilt.y * p.z * 12;
+      cx.globalAlpha = p.a * Math.min(1, p.y / (H * .15));
+      cx.font = p.s + 'px serif'; cx.fillText(p.e, p.x + sx + ox, p.y + oy);
+    }
+  }
+  cx.globalAlpha = 1;
+}
+
+/* ============ eğim / jiroskop ============ */
+stage.addEventListener('pointermove', e => {
+  if (e.pointerType === 'touch') return;
+  tilt.tx = (e.clientX / innerWidth - .5) * 2; tilt.ty = (e.clientY / innerHeight - .5) * 2;
+});
+stage.addEventListener('pointerleave', () => { tilt.tx = 0; tilt.ty = 0; });
+let gyroOn = false, base = null;
+function gyroInit() {
+  if (gyroOn || !('DeviceOrientationEvent' in window)) return;
+  gyroOn = true;
+  const start = () => addEventListener('deviceorientation', ev => {
+    if (ev.gamma == null) return;
+    if (base == null) base = ev.beta;
+    tilt.tx = Math.max(-1, Math.min(1, ev.gamma / 25));
+    tilt.ty = Math.max(-1, Math.min(1, (ev.beta - base) / 25));
+  });
+  try {
+    if (typeof DeviceOrientationEvent.requestPermission === 'function')
+      DeviceOrientationEvent.requestPermission().then(r => { if (r === 'granted') start(); }).catch(() => {});
+    else start();
+  } catch (_) {}
+}
+document.addEventListener('click', gyroInit, { once: true });
+// iOS Safari: iki parmakla yakınlaştırma kitabı bozmasın
+['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => e.preventDefault()));
+
+const bgEl = $('#bg'), blobs = [...document.querySelectorAll('#bg i')];
+let last = performance.now();
+function tick(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  const k = reduce ? 0 : 1, f = Math.min(1, dt * 6);
+  tilt.x += (tilt.tx - tilt.x) * f; tilt.y += (tilt.ty - tilt.y) * f;
+  wrap.style.transform = `rotateY(${(tilt.x * 4 * k).toFixed(2)}deg) rotateX(${(-tilt.y * 3 * k).toFixed(2)}deg)`;
+  const ms = (SC - 1) / 2 * state.W * .9;
+  wrap.style.setProperty('--tx', (-tilt.x * ms * k).toFixed(2) + 'px');
+  wrap.style.setProperty('--ty', (-tilt.y * ms * k).toFixed(2) + 'px');
+  bgEl.style.transform = `translate(${(-tilt.x * 14 * k).toFixed(1)}px,${(-tilt.y * 10 * k).toFixed(1)}px)`;
+  blobs.forEach(b => { const z = +b.dataset.z; b.style.transform = `translate(${(-tilt.x * 30 * z * k).toFixed(1)}px,${(-tilt.y * 22 * z * k).toFixed(1)}px)`; });
+  drawFx(dt, now / 1000);
+  requestAnimationFrame(tick);
+}
+
+/* ============ sayfa etkinleştirme ============ */
+function clearUI() {
+  closeBubble();
+}
+function pagerText(i) {
+  const L = leaves[i], n = leaves.length - 2;
+  return L.kind === 'cover' ? 'Okładka' : L.kind === 'final' ? 'Koniec ♥' : L.n + ' / ' + n;
+}
+function activate(i) {
+  activeIdx = i;
+  const L = leaves[i], cfg = L.cfg || {};
+  setTheme(cfg.parcacik || (L.kind === 'cover' ? 'yildiz' : 'kalp'));
+  setupTalk(i);
+  updateHint();
+  if (L.kind === 'final') burst(state.W / 2, state.H * .55, ['💗', '✨', '💖', '🎉'], 34);
+}
+
+/* ============ sayfa içine yerleşen masal anlatıcısı ============ */
+const bubble = $('#bubble'), btxt = $('#btext'), bnext = $('#bnext');
+let activeNarrator = null, lines = [], li = 0, typing = null;
+const seen = new Set();
+function placeBubble() {
+  if (document.body.classList.contains('is-mobile')) {
+    document.body.appendChild(bubble);
+  } else if (activeNarrator) {
+    activeNarrator.appendChild(bubble);
+  }
+}
+function setupTalk(i) {
+  const L = leaves[i];
+  let k = L.cfg && L.cfg.konusma;
+  if (!k) k = ['Teksty dla tej strony możesz napisać w pliku hikaye.js 💬'];
+  lines = [].concat(k); li = 0;
+
+  // Aktif sol sayfa = sağdaki güncel yaprağın bir öncekinin ARKA yüzü.
+  activeNarrator = i > 0 ? leaves[i - 1].bk.querySelector('.narrator-page') : null;
+  if (activeNarrator) {
+    placeBubble();
+    const trigger = activeNarrator.querySelector('.narrator-call');
+    trigger.classList.toggle('unread', !seen.has(i));
+    trigger.setAttribute('aria-label', seen.has(i) ? 'Posłuchaj ponownie' : 'Posłuchaj opowieści');
+  }
+  placeBubble();
+}
+function endLabel() { return li < lines.length - 1 ? 'dalej ›' : 'zamknij ✕'; }
+function stopTalking() {
+  if (activeNarrator) activeNarrator.classList.remove('is-speaking');
+}
+function typeLine() {
+  clearInterval(typing);
+  const chars = Array.from(String(lines[li] || '')); let n = 0;
+  btxt.textContent = ''; bnext.textContent = '';
+  activeNarrator?.classList.add('is-speaking');
+  if (!chars.length) { stopTalking(); bnext.textContent = endLabel(); return; }
+  typing = setInterval(() => {
+    n++; btxt.textContent = chars.slice(0, n).join('');
+    if (n >= chars.length) {
+      clearInterval(typing); typing = null; stopTalking(); bnext.textContent = endLabel();
+    }
+  }, 28);
+}
+function openBubble() {
+  if (!activeNarrator) return;
+  li = 0;
+  bubble.classList.add('open');
+  bubble.scrollTop = 0;
+  seen.add(activeIdx); updateHint();
+  activeNarrator.querySelector('.narrator-call')?.classList.remove('unread');
+  typeLine();
+}
+function closeBubble() {
+  clearInterval(typing); typing = null;
+  bubble.classList.remove('open');
+  stopTalking(); updateHint();
+}
+function advance() {
+  if (typing) {
+    clearInterval(typing); typing = null;
+    btxt.textContent = lines[li]; stopTalking(); bnext.textContent = endLabel();
+    return;
+  }
+  if (li < lines.length - 1) { li++; bubble.scrollTop = 0; typeLine(); }
+  else closeBubble();
+}
+// Bütün sol sayfa etkileşimli; sürükleme ve sayfa çevirme hâlâ çalışır.
+book.addEventListener('click', e => {
+  if (busy || !activeNarrator || e.target.closest('#bubble')) return;
+  const page = e.target.closest('.narrator-page');
+  if (page !== activeNarrator) return;
+  bubble.classList.contains('open') ? closeBubble() : openBubble();
+});
+bubble.addEventListener('pointerdown', e => e.stopPropagation());
+bubble.addEventListener('click', advance);
+const hint = $('#tapHint');
+function updateHint() {
+  hint.classList.toggle('on', !!(state.mobile && activeNarrator && !seen.has(activeIdx) && !bubble.classList.contains('open')));
+}
+
+/* ============ başlat ============ */
+(async function init() {
+  const { pages, cover, finalImg, narrator } = await findImages();
+  NARR = narrator;
+  const demo = !pages.length;
+  const list = demo ? [1, 2, 3].map(demoImage) : pages;
+  AR = list[0].w / list[0].h;
+  const data = [{ kind: 'cover', cover }];
+  list.forEach((im, k) => data.push({ kind: 'page', n: k + 1, src: im.src, cfg: demo ? demoCfg(k + 1) : ((CFG.sayfalar || {})[k + 1] || {}) }));
+  data.push({ kind: 'final', finalImg, cfg: CFG.final || {} });
+  buildBook(data);
+  layout();
+  activate(0);
+  requestAnimationFrame(tick);
+  $('#loading').classList.add('off');
+  setTimeout(() => $('#loading').remove(), 800);
+})();
+addEventListener('resize', layout);
+// iOS, döndürmeden hemen sonra eski ölçüyü verebilir; bir kez daha ölç.
+addEventListener('orientationchange', () => { requestAnimationFrame(layout); setTimeout(layout, 350); });
+})();
+</script>
+</body>
+</html>
