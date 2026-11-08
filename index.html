@@ -7,9 +7,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Nasz Jeden Dzień">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%97%3C/text%3E%3C/svg%3E">
 <title>Nasz Jeden Dzień</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,10 +21,7 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;width:100%;overflow:hidden;background:#ffe9ef;color:var(--ink);
-  font-family:var(--body);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
-  -webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior:none;touch-action:manipulation}
-/* iOS Safari: sayfanın kaymasını / lastik etkisini engeller */
-body{position:fixed;inset:0}
+  font-family:var(--body);-webkit-user-select:none;user-select:none;overscroll-behavior:none}
 button{font:inherit;color:inherit}
 
 /* ---------- arka plan ---------- */
@@ -41,9 +35,7 @@ button{font:inherit;color:inherit}
 #bg i:nth-child(3){width:14vmin;height:14vmin;left:18%;top:12%;background:radial-gradient(circle at 35% 30%,#fff,#ffe49a 70%)}
 
 /* ---------- sahne ve kitap ---------- */
-#stage{position:fixed;left:0;right:0;top:0;bottom:env(safe-area-inset-bottom,0px);display:grid;place-items:center;perspective:1500px;overflow:hidden;
-  /* çentik / Dynamic Island / ana ekran çizgisi için güvenli alan */
-  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) 0 env(safe-area-inset-left,0px)}
+#stage{position:fixed;inset:0 0 var(--stage-bottom,64px) 0;display:grid;place-items:center;perspective:1500px;overflow:hidden}
 #shift{position:relative;width:var(--W);height:var(--H);transition:transform .95s cubic-bezier(.5,0,.2,1)}
 #wrap{position:relative;width:100%;height:100%;touch-action:none;will-change:transform}
 #book{position:absolute;inset:0;perspective:2600px;perspective-origin:0 50%;isolation:isolate}
@@ -118,17 +110,11 @@ button{font:inherit;color:inherit}
   background:linear-gradient(180deg,rgba(5,10,42,.08) 0%,transparent 55%,rgba(5,12,40,.36) 100%)}
 .narrator-page.is-speaking .narrator-art{animation:teller-breathe .62s ease-in-out infinite alternate}
 @keyframes teller-breathe{from{transform:scale(1.002) translateY(0)}to{transform:scale(1.009) translateY(-1px)}}
-/* anlatici.png yoksa şık bir yedek sayfa */
-.narrator-page.noart{background:radial-gradient(circle at 50% 38%,#fff7d6,transparent 60%),linear-gradient(160deg,#ffd2e0,#ddd6ff)}
-.narrator-page.noart::after{display:none}
-.narrator-page.noart::before{content:'♥';position:absolute;left:0;right:0;top:26%;text-align:center;line-height:1;
-  font-size:calc(var(--W) * .3);color:rgba(232,86,127,.45)}
-.narrator-page.noart .narrator-note{color:var(--ink);text-shadow:none;opacity:.8}
 .narrator-call{position:absolute;right:5%;bottom:5%;z-index:3;max-width:90%;
   padding:2.2% 4%;border:1px solid rgba(255,233,168,.8);border-radius:99px;
   background:rgba(10,23,61,.85);box-shadow:0 3px 18px rgba(2,9,32,.38),inset 0 0 16px rgba(250,190,81,.1);
   color:#fff1c7;font-family:var(--hand);font-size:calc(var(--W) * .062);font-weight:700;line-height:1.1;
-  cursor:pointer;transition:background .2s,transform .2s}
+  cursor:pointer;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);transition:background .2s,transform .2s}
 .narrator-call:hover{background:rgba(22,39,96,.94);transform:translateY(-2px)}
 .narrator-call:focus-visible{outline:3px solid #ffdb8d;outline-offset:3px}
 .narrator-call.unread::after{content:'✦';position:absolute;right:-5%;top:-30%;color:#ffe1a2;
@@ -164,40 +150,36 @@ button{font:inherit;color:inherit}
 #nav button:focus-visible,.narrator-call:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 #pager{min-width:74px;text-align:center;font-weight:800;font-size:14px}
 
-#mobile-actions{display:none;position:fixed;left:0;right:0;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:49;gap:10px;justify-content:center;padding:0 12px;pointer-events:none}
-#mobile-actions button{pointer-events:auto;min-height:44px;border-radius:99px;border:1.5px solid rgba(255,255,255,.9);padding:8px 12px;background:#182f65;color:#fff4d0;
-  font-weight:800;font-size:clamp(11px,3.2vw,14px);white-space:nowrap;box-shadow:0 3px 12px #6b49604a;touch-action:manipulation}
+#mobile-actions{display:none;position:fixed;left:0;right:0;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:49;gap:10px;justify-content:center;padding:0 12px;pointer-events:none}
+#mobile-actions button{pointer-events:auto;min-height:44px;border-radius:99px;border:1.5px solid rgba(255,255,255,.9);padding:8px 15px;background:#182f65;color:#fff4d0;font-weight:800;font-size:14px;box-shadow:0 3px 12px #6b49604a}
 #mobile-actions button:disabled{opacity:.35}
-#imageviewer{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(14,12,33,.93);
-  padding:calc(env(safe-area-inset-top,0px) + 20px) calc(env(safe-area-inset-right,0px) + 14px) calc(env(safe-area-inset-bottom,0px) + 22px) calc(env(safe-area-inset-left,0px) + 14px);gap:14px;overscroll-behavior:contain}
+#imageviewer{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(14,12,33,.93);padding:calc(env(safe-area-inset-top,0px) + 20px) 14px calc(env(safe-area-inset-bottom,0px) + 22px);gap:14px}
 #imageviewer.open{display:flex}
 #imageviewer img{width:100%;height:100%;max-height:calc(100% - 62px);object-fit:contain;min-height:0}
 #imageviewer button{min-height:44px;min-width:120px;border:2px solid #fff;border-radius:99px;background:#ff8fab;color:#fff;font-weight:800}
-
-#tapHint{display:none;position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);text-align:center;z-index:40;
-  pointer-events:none;font-family:var(--hand);font-weight:700;font-size:20px;color:var(--ink);opacity:0;transition:opacity .4s}
-body.is-mobile #tapHint{display:block}
-#tapHint.on{opacity:.8;animation:hintpulse 1.8s ease-in-out infinite}
-@keyframes hintpulse{50%{opacity:.35}}
-#rotate{display:none;position:fixed;inset:0;z-index:95;place-items:center;text-align:center;padding:20px;
-  background:linear-gradient(165deg,#ffe3ec,#e6defe);font-family:var(--hand);font-weight:700;font-size:28px;line-height:1.2;color:var(--ink)}
-#rotate div{animation:beat 1.6s ease-in-out infinite}
-body.is-mobile.is-landscape #rotate{display:grid}
-
-/* ---------- TELEFON (JS, body'ye .is-mobile / .is-landscape ekler) ---------- */
-body.is-mobile #mobile-actions{display:flex}
-body.is-mobile #nav button{width:48px;height:48px;touch-action:manipulation}
-body.is-mobile #pager{min-width:86px}
-body.is-mobile .narrator-call{font-size:max(10px,calc(var(--W) * .062));padding:5px 8px}
-body.is-mobile .narrator-note,body.is-mobile .sheen{display:none}
-body.is-mobile #bubble{position:fixed;left:calc(12px + env(safe-area-inset-left,0px));right:calc(12px + env(safe-area-inset-right,0px));top:auto;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 16px);width:auto;max-height:min(46dvh,340px);padding:17px 18px 14px;font-size:17px;line-height:1.5;
-  border-radius:20px;transform-origin:50% 100%;z-index:70;box-shadow:0 10px 45px #0a0d2b9c;touch-action:pan-y;-webkit-overflow-scrolling:touch}
-body.is-mobile #bubble::after{display:none}
-body.is-mobile.is-landscape #nav{left:calc(12px + env(safe-area-inset-left,0px));transform:none;bottom:calc(8px + env(safe-area-inset-bottom,0px))}
-body.is-mobile.is-landscape #mobile-actions{left:auto;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:0;gap:6px}
-body.is-mobile.is-landscape #mobile-actions button{font-size:12px;padding:7px 10px}
-body.is-mobile.is-landscape #bubble{left:15%;right:15%;max-height:58dvh;font-size:16px}
+@media (max-width:700px){
+  :root{--stage-bottom:120px}
+  #mobile-actions{display:flex;bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+  #nav{bottom:calc(11px + env(safe-area-inset-bottom,0px))}
+  #nav button{width:48px;height:48px;touch-action:manipulation}
+  #pager{min-width:86px}
+  .narrator-call{font-size:max(10px,calc(var(--W) * .062));padding:5px 7px}
+  .narrator-note{display:none}
+  body.mobile-reading #bubble{position:fixed;left:12px;right:12px;top:auto;bottom:calc(125px + env(safe-area-inset-bottom,0px));width:auto;max-height:min(47dvh,330px);padding:17px 18px 14px;font-size:16px;line-height:1.5;border-radius:20px;transform-origin:50% 100%;z-index:70;box-shadow:0 10px 45px #0a0d2b9c}
+  body.mobile-reading #bubble::after{display:none}
+  #loading{font-size:24px}
+  #stage{padding-top:env(safe-area-inset-top,0px)}
+  #mobile-actions button{font-size:clamp(11px,3.2vw,14px);padding:8px 10px}
+  #wrap{touch-action:none}
+  #imageviewer{overscroll-behavior:contain}
+}
+@media (max-width:700px) and (orientation:landscape){
+  :root{--stage-bottom:66px}
+  #mobile-actions{bottom:calc(9px + env(safe-area-inset-bottom,0px));left:auto;right:10px;gap:5px}
+  #mobile-actions button{font-size:12px;padding:7px 9px}
+  #nav{left:40%;}
+  body.mobile-reading #bubble{bottom:calc(60px + env(safe-area-inset-bottom,0px));left:12%;right:12%;max-height:56dvh}
+}
 #loading{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:linear-gradient(165deg,#ffe3ec,#e6defe);
   font-family:var(--hand);font-weight:700;font-size:30px;text-align:center;transition:opacity .6s}
 #loading.off{opacity:0;pointer-events:none}
@@ -224,8 +206,19 @@ body.is-mobile.is-landscape #bubble{left:15%;right:15%;max-height:58dvh;font-siz
   </div>
 </div>
 
-<div id="tapHint">✦ dotknij obrazu, aby posłuchać opowieści</div>
-<div id="rotate"><div>↻<br>Obróć telefon<br>do pozycji pionowej</div></div>
+<div id="nav">
+  <button id="prev" aria-label="Poprzednia strona">‹</button>
+  <div id="pager">Okładka</div>
+  <button id="next" aria-label="Następna strona">›</button>
+</div>
+<div id="mobile-actions" aria-label="Opcje książki">
+  <button id="read-mobile" type="button">✦ Posłuchaj opowieści</button>
+  <button id="zoom-mobile" type="button">⤢ Powiększ obraz</button>
+</div>
+<div id="imageviewer" role="dialog" aria-modal="true" aria-label="Powiększony obraz" aria-hidden="true">
+  <img id="viewerimg" src="" alt="Powiększona ilustracja">
+  <button id="closeviewer" type="button">✕ Zamknij</button>
+</div>
 <div id="loading"><div>Książka się przygotowuje ♥</div></div>
 
 <script src="hikaye.js"></script>
@@ -244,45 +237,32 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;
 
 let AR = 0.75, leaves = [], cur = 0, busy = false, activeIdx = -1;
 
-/* ============ görsel bulma: strona1, strona2, ... okladka, final, anlatici ============ */
-// GitHub Pages / Netlify dosya adlarında BÜYÜK-küçük harfe duyarlıdır (strona1.jpg ≠ Strona1.JPG).
-const EXT = ['jpg', 'jpeg', 'png', 'webp', 'JPG', 'JPEG', 'PNG', 'WEBP'];
-function loadImg(src) {
+/* ============ görsel bulma: sayfa1, sayfa2, ... kapak, final ============ */
+const EXT = ['jpg', 'png', 'webp', 'jpeg', 'JPG', 'PNG', 'WEBP', 'JPEG'];
+function probe(base) {
   return new Promise(res => {
-    const im = new Image();
-    im.decoding = 'async';
-    im.onload = () => res({ src, w: im.naturalWidth, h: im.naturalHeight });
-    im.onerror = () => res(null);
-    im.src = src;
+    let i = 0;
+    const next = () => {
+      if (i >= EXT.length) return res(null);
+      const src = base + '.' + EXT[i++];
+      const im = new Image();
+      im.onload = () => res({ src, w: im.naturalWidth, h: im.naturalHeight });
+      im.onerror = next;
+      im.src = src;
+    };
+    next();
   });
 }
-// Verilen adların tüm uzantılarını paralel dener, ilk bulunanı döndürür.
-async function probe(bases) {
-  const urls = [];
-  bases.forEach(b => EXT.forEach(e => urls.push(encodeURI(b) + '.' + e)));
-  const found = await Promise.all(urls.map(loadImg));
-  return found.find(Boolean) || null;
-}
-const pageBases = n => ['strona' + n, 'sayfa' + n];
 async function findImages() {
-  // hikaye.js içindeki sayfa sayısı kadarını paralel yükle (hızlı), fazlası varsa sırayla ara.
-  const expected = Object.keys(CFG.sayfalar || {}).length;
   const pages = [];
-  if (expected) {
-    const first = await Promise.all(Array.from({ length: expected }, (_, k) => probe(pageBases(k + 1))));
-    for (const r of first) { if (!r) break; pages.push(r); }
+  for (let n = 1; n <= 80; n++) {
+    const r = await probe('sayfa' + n);
+    if (!r) break;
+    pages.push(r);
   }
-  if (pages.length === expected) {
-    for (let n = expected + 1; n <= 80; n++) {
-      const r = await probe(pageBases(n));
-      if (!r) break;
-      pages.push(r);
-    }
-  }
-  const [cover, finalImg, narrator] = await Promise.all([
-    probe(['okladka', 'okładka', 'kapak', 'cover']), probe(['final']), probe(['anlatici', 'narrator'])
-  ]);
-  return { pages, cover, finalImg, narrator };
+  const cover = await probe('kapak');
+  const finalImg = await probe('final');
+  return { pages, cover, finalImg };
 }
 
 /* görsel yoksa deneme için örnek sayfalar */
@@ -304,46 +284,37 @@ function demoCfg(n) {
 }
 
 /* ============ boyutlandırma ============ */
-/* Telefon dikey  → TEK sayfa (illüstrasyon ekranı doldurur, anlatıcı alttan açılır)
-   Telefon yatay / tablet / bilgisayar → AÇIK KİTAP (iki sayfa) */
 function layout() {
+  // visualViewport: iOS Safari'de adres çubuğu görünürken/kaybolurken doğru ölçü.
   const vw = document.documentElement.clientWidth || innerWidth;
-  const vh = innerHeight;               // iOS Safari'de adres çubuğuna göre güncel görünür yükseklik
+  const vh = window.visualViewport ? window.visualViewport.height : innerHeight;
+  const mobile = vw <= 700;
   const landscape = vw > vh;
-  const mobile = Math.min(vw, vh) <= 600;   // iPhone 17 Pro: 402×874 (dikey) / 874×402 (yatay)
-  state.mobile = mobile; state.single = mobile && !landscape;
-  document.body.classList.toggle('is-mobile', mobile);
-  document.body.classList.toggle('is-landscape', landscape);
-
-  const cs = getComputedStyle(stage);
-  const bottom = (parseFloat(cs.bottom) || 0) + 10;   // alt güvenli alan (ana ekran çizgisi)
-  const padT = parseFloat(cs.paddingTop) || 0, padL = parseFloat(cs.paddingLeft) || 0, padR = parseFloat(cs.paddingRight) || 0;
-  const availH = Math.max(120, vh - padT - bottom - (mobile ? 16 : 30));
-  const availW = vw - padL - padR;
-  // Tek sayfa: tüm genişlik. Açık kitap: 2 sayfa + kenar payı.
-  const maxW = state.single ? Math.max(100, availW - 32)
-                            : Math.max(100, (availW - (mobile ? 24 : 48)) / (mobile ? 2.04 : 2.10));
-  let H = Math.min(availH, maxW / AR), W = H * AR;
+  document.body.classList.toggle('mobile-reading', mobile);
+  const reserved = mobile ? (landscape ? 62 : 120) : 64;
+  const margin = mobile ? (landscape ? 8 : 12) : 30;
+  const maxH = Math.max(120, vh - reserved - margin);
+  // Bir sayfanın eni W. Açık kitabın toplam eni 2W; güvenli kenar payı bırak.
+  const maxW = Math.max(100, (vw - (mobile ? 12 : 48)) / (mobile ? 2.04 : 2.10));
+  let H = Math.min(maxH, maxW / AR), W = H * AR;
   W = Math.floor(W); H = Math.floor(H);
-  state.W = W; state.H = H;
+  state.W = W; state.H = H; state.wide = true;
   root.style.setProperty('--W', W + 'px'); root.style.setProperty('--H', H + 'px');
-  if (!busy) leaves.forEach((_, i) => setLeaf(i, i < cur ? -180 : 0, false));
   updateShift(cur);
   resizeFx();
-  placeBubble();   // telefonda konuşma balonu sayfanın dışında, altta açılır
+  // Konuşma balonu küçük ekranda sayfanın dışına çıkarak rahat okunur.
+  placeBubble();
 }
 function updateShift(target) {
-  shift.style.transform = (target > 0 && !state.single) ? `translateX(${state.W / 2}px)` : 'translateX(0)';
+  shift.style.transform = target > 0 ? `translateX(${state.W / 2}px)` : 'translateX(0)';
 }
 
 /* ============ kitap yapısı ============ */
-let NARR = null;   // anlatici.png / .jpg / .webp bulunursa dolar
 function narratorHTML(note = '') {
-  const art = NARR ? `<img class="narrator-art" src="${NARR.src}" alt="" draggable="false">` : '';
-  return `<div class="narrator-page${NARR ? '' : ' noart'}">
-    ${art}
+  return `<div class="narrator-page">
+    <img class="narrator-art" src="anlatici.png" alt="Masal anlatan yaşlı dede" draggable="false">
     ${note ? `<div class="narrator-note">${esc(note)}</div>` : ''}
-    <button class="narrator-call unread" type="button" data-nodrag aria-label="Posłuchaj opowieści">✦ Posłuchaj opowieści</button>
+    <button class="narrator-call unread" type="button" data-nodrag aria-label="Masalı dinle">✦ Posłuchaj opowieści</button>
   </div>`;
 }
 function leafHTML(d) {
@@ -392,8 +363,6 @@ function setLeaf(i, a, moving) {
   const lift = moving ? Math.sin(-a * Math.PI / 180) * 2.4 : 0;
   L.el.style.transform = `rotateY(${a}deg) rotateX(${lift}deg)`;
   L.el.style.zIndex = moving ? 1000 : (a <= -90 ? i + 1 : 300 - i);
-  // Tek sayfa modunda çevrilmiş yapraklar ekran dışında kalır; GPU yükünü azaltmak için gizle.
-  L.el.style.visibility = (state.single && !moving && a <= -90) ? 'hidden' : 'visible';
   const s = Math.abs(Math.sin(a * Math.PI / 180)), front = a > -90;
   L.fs.style.opacity = front ? s * 0.4 : 0;
   L.bs.style.opacity = front ? 0 : s * 0.4;
@@ -440,7 +409,7 @@ wrap.addEventListener('pointermove', e => {
     sw.moved = true; busy = true; clearUI();
     try { wrap.setPointerCapture(e.pointerId); } catch (_) {}
   }
-  sw.p = Math.min(1, Math.abs(dx) / (state.W * (state.single ? 0.6 : 0.85)));
+  sw.p = Math.min(1, Math.abs(dx) / (state.W * 0.85));
   setLeaf(sw.i, sw.dir > 0 ? -180 * sw.p : -180 + 180 * sw.p, true);
 });
 const swEnd = e => {
@@ -452,9 +421,8 @@ const swEnd = e => {
     if (e.target.closest('.narrator-page')) return;
     const r = wrap.getBoundingClientRect(), x = e.clientX;
     if (cur === 0) next();
-    else if (x < r.left + r.width * (state.single ? 0.25 : 0.12)) prev();
-    else if (x > r.right - r.width * (state.single ? 0.25 : 0.18)) next();
-    else if (state.single && activeNarrator) (bubble.classList.contains('open') ? closeBubble() : openBubble());
+    else if (x < r.left + r.width * 0.12) prev();
+    else if (x > r.right - r.width * 0.18) next();
     return;
   }
   const commit = s.p > 0.3;
@@ -468,6 +436,7 @@ const swEnd = e => {
 };
 wrap.addEventListener('pointerup', swEnd);
 wrap.addEventListener('pointercancel', swEnd);
+$('#next').onclick = next; $('#prev').onclick = prev;
 addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
   else if (e.key === 'ArrowLeft') prev();
@@ -552,8 +521,6 @@ function gyroInit() {
   } catch (_) {}
 }
 document.addEventListener('click', gyroInit, { once: true });
-// iOS Safari: iki parmakla yakınlaştırma kitabı bozmasın
-['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => e.preventDefault()));
 
 const bgEl = $('#bg'), blobs = [...document.querySelectorAll('#bg i')];
 let last = performance.now();
@@ -584,7 +551,10 @@ function activate(i) {
   const L = leaves[i], cfg = L.cfg || {};
   setTheme(cfg.parcacik || (L.kind === 'cover' ? 'yildiz' : 'kalp'));
   setupTalk(i);
-  updateHint();
+  $('#pager').textContent = pagerText(i);
+  $('#prev').disabled = i === 0; $('#next').disabled = i === leaves.length - 1;
+  $('#read-mobile').disabled = i === 0;
+  $('#zoom-mobile').disabled = i === 0;
   if (L.kind === 'final') burst(state.W / 2, state.H * .55, ['💗', '✨', '💖', '🎉'], 34);
 }
 
@@ -593,7 +563,7 @@ const bubble = $('#bubble'), btxt = $('#btext'), bnext = $('#bnext');
 let activeNarrator = null, lines = [], li = 0, typing = null;
 const seen = new Set();
 function placeBubble() {
-  if (document.body.classList.contains('is-mobile')) {
+  if (document.body.classList.contains('mobile-reading')) {
     document.body.appendChild(bubble);
   } else if (activeNarrator) {
     activeNarrator.appendChild(bubble);
@@ -611,7 +581,7 @@ function setupTalk(i) {
     placeBubble();
     const trigger = activeNarrator.querySelector('.narrator-call');
     trigger.classList.toggle('unread', !seen.has(i));
-    trigger.setAttribute('aria-label', seen.has(i) ? 'Posłuchaj ponownie' : 'Posłuchaj opowieści');
+    trigger.setAttribute('aria-label', seen.has(i) ? 'Masalı tekrar dinle' : 'Masalı dinle');
   }
   placeBubble();
 }
@@ -637,14 +607,14 @@ function openBubble() {
   li = 0;
   bubble.classList.add('open');
   bubble.scrollTop = 0;
-  seen.add(activeIdx); updateHint();
+  seen.add(activeIdx);
   activeNarrator.querySelector('.narrator-call')?.classList.remove('unread');
   typeLine();
 }
 function closeBubble() {
   clearInterval(typing); typing = null;
   bubble.classList.remove('open');
-  stopTalking(); updateHint();
+  stopTalking();
 }
 function advance() {
   if (typing) {
@@ -664,15 +634,27 @@ book.addEventListener('click', e => {
 });
 bubble.addEventListener('pointerdown', e => e.stopPropagation());
 bubble.addEventListener('click', advance);
-const hint = $('#tapHint');
-function updateHint() {
-  hint.classList.toggle('on', !!(state.mobile && activeNarrator && !seen.has(activeIdx) && !bubble.classList.contains('open')));
-}
+$('#read-mobile').addEventListener('click', () => {
+  if (busy || !activeNarrator) return;
+  bubble.classList.contains('open') ? closeBubble() : openBubble();
+});
+const viewer = $('#imageviewer'), viewerimg = $('#viewerimg');
+function closeViewer() { viewer.classList.remove('open'); viewer.setAttribute('aria-hidden','true'); viewerimg.removeAttribute('src'); }
+$('#zoom-mobile').addEventListener('click', () => {
+  if (busy || cur === 0) return;
+  const picture = leaves[cur].fr.querySelector('.scene img,.fi-img');
+  if (!picture) return;
+  closeBubble();
+  viewerimg.src = picture.src;
+  viewer.classList.add('open'); viewer.setAttribute('aria-hidden','false');
+});
+$('#closeviewer').addEventListener('click',closeViewer);
+viewer.addEventListener('click',e => { if (e.target === viewer) closeViewer(); });
+addEventListener('keydown',e => { if (e.key === 'Escape') closeViewer(); });
 
 /* ============ başlat ============ */
 (async function init() {
-  const { pages, cover, finalImg, narrator } = await findImages();
-  NARR = narrator;
+  const { pages, cover, finalImg } = await findImages();
   const demo = !pages.length;
   const list = demo ? [1, 2, 3].map(demoImage) : pages;
   AR = list[0].w / list[0].h;
@@ -687,8 +669,8 @@ function updateHint() {
   setTimeout(() => $('#loading').remove(), 800);
 })();
 addEventListener('resize', layout);
-// iOS, döndürmeden hemen sonra eski ölçüyü verebilir; bir kez daha ölç.
-addEventListener('orientationchange', () => { requestAnimationFrame(layout); setTimeout(layout, 350); });
+if (window.visualViewport) window.visualViewport.addEventListener('resize', layout);
+addEventListener('orientationchange', () => requestAnimationFrame(layout));
 })();
 </script>
 </body>
